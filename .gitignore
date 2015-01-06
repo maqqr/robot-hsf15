@@ -1,0 +1,7 @@
+*.pyc
+*.o
+*.blend1
+*.blend2
+*.blend3
+*.blend4
+simulation/__pycache__
