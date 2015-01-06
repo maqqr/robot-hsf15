@@ -99,7 +99,13 @@ class Robot(object):
     """ Interface for the robotlogic library. """
     def __init__(self, library_name):
         super(Robot, self).__init__()
-        self.__library__ = ctypes.cdll.LoadLibrary(library_name)
+        self.__library__ = None
+        try:
+            self.__library__ = ctypes.cdll.LoadLibrary(library_name)
+        except OSError as err:
+            print("\nYou probably need to use 32-bit version of Blender.\n")
+            # Re-raise the exception.
+            raise err
         self.__think_func__ = self.__library__.think
         self.__think_func__.argtypes = [Input]
         self.__think_func__.restype = Output
