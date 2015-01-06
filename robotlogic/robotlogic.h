@@ -1,8 +1,19 @@
 #ifndef _ROBOTLOGIC_H_
 #define _ROBOTLOGIC_H_
 
+/* Compiler defines NOTARDUINO, when not
+ * compiling on Arduino. */
+#ifdef NOTARDUINO
 /* DLL export definition. */
 #define ROBOT_API __declspec(dllexport)
+#else
+/* On Arduino, ROBOT_API means nothing. */
+#define ROBOT_API
+#endif /* NOTARDUINO */
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /* --------- Structs --------- */
 
@@ -31,5 +42,8 @@ typedef struct
 /* Converts sensor inputs into actuator outputs. */
 ROBOT_API robot_output_t think(robot_input_t input);
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* _ROBOTLOGIC_H_ */

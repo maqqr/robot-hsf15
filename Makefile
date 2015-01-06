@@ -6,8 +6,8 @@ OBJECTS = $(addsuffix .o,$(FILES))
 
 # Assembles object files into robotlogic.dll
 simulation/robotlogic.dll: $(OBJECTS)
-	gcc -shared $^ -o $@
+	gcc -DNOTARDUINO -shared $^ -o $@
 
 # Compiles source files into object files
 $(OBJECTS): %.o : %.c %.h
-	gcc -c $< -o $@
+	gcc -DNOTARDUINO -c $< -o $@
