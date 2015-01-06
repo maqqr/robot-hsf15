@@ -111,6 +111,6 @@ class Robot(object):
         self.__think_func__.restype = Output
 
     def think(self, robot_input):
-        """ Takes RobotInput and returns RobotOutput. """
+        """ Takes Input and returns Output. """
         # ctypes raises ArgumentError if robot_input's type is not Input.
         return self.__think_func__(robot_input)
