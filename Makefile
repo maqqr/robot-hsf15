@@ -12,8 +12,8 @@ endif
 
 # Assembles object files into robotlogic.dll/.so
 $(OUTPUT): $(OBJECTS)
-	gcc -DNOTARDUINO -shared $^ -o $@
+	gcc -DNOTARDUINO -shared -fPIC $^ -o $@
 
 # Compiles source files into object files
 $(OBJECTS): %.o : %.c %.h
-	gcc -DNOTARDUINO -c $< -o $@
+	gcc -DNOTARDUINO -c -fPIC $< -o $@

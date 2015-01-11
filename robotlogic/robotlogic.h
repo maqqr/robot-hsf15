@@ -37,8 +37,9 @@ typedef struct
  */
 typedef struct
 {
-    int move; /*  1 = forwards, -1 = backwards */
-    int turn; /* -1 = left,      1 = right */
+    /* 1.0 = forwards, -1.0 = backwards */
+    float left;
+    float right;
 } robot_output_t;
 
 /* --------- Robot API --------- */

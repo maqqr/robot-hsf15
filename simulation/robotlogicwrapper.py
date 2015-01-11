@@ -51,7 +51,8 @@ def parse_fields(filename):
                 else:
                     # Line must be a struct field.
                     field = comment_remover(line).strip('\r\n\t ;')
-                    current_struct.append(field.split(' '))
+                    if len(field) > 0:
+                        current_struct.append(field.split(' '))
             else:
                 if line.startswith('typedef struct'):
                     # Found a new struct.
@@ -102,6 +103,7 @@ class Robot(object):
         self.__library__ = None
         try:
             self.__library__ = ctypes.cdll.LoadLibrary(library_name)
+            print("Debug: Loaded robotlogic library")
         except OSError as err:
             print("\nYou probably need to use 32-bit version of Blender.\n")
             # Re-raise the exception.
