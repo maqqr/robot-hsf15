@@ -1,4 +1,5 @@
 *.pyc
+*.swp
 *.o
 *.blend1
 *.blend2
