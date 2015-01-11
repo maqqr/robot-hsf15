@@ -5,7 +5,11 @@
  * compiling on Arduino. */
 #ifdef NOTARDUINO
 /* DLL export definition. */
+#ifdef _WIN32
 #define ROBOT_API __declspec(dllexport)
+#else
+#define ROBOT_API __attribute__((visibility("default")))
+#endif /* _WIN32 */
 #else
 /* On Arduino, ROBOT_API means nothing. */
 #define ROBOT_API

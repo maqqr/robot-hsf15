@@ -4,8 +4,14 @@ FILES = robotlogic/robotlogic
 # Source files with .o suffix
 OBJECTS = $(addsuffix .o,$(FILES))
 
-# Assembles object files into robotlogic.dll
-simulation/robotlogic.dll: $(OBJECTS)
+ifeq ($(OS),Windows_NT)
+    OUTPUT = "simulation/robotlogic.dll"
+else
+    OUTPUT = "simulation/robotlogic.so"
+endif
+
+# Assembles object files into robotlogic.dll/.so
+$(OUTPUT): $(OBJECTS)
 	gcc -DNOTARDUINO -shared $^ -o $@
 
 # Compiles source files into object files
