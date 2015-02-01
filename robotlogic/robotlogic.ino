@@ -30,13 +30,31 @@ float read_distance(int trig, int echo) {
 
 void setup() {
   Serial.begin(9600);
-  Serial.begin (9600);
+  pinMode(vasenM1, OUTPUT);
+  pinMode(oikeaM2, OUTPUT);
   pinMode(frontTrigPin, OUTPUT);
   pinMode(frontEchoPin, INPUT);
   pinMode(leftTrigPin, OUTPUT);
   pinMode(leftEchoPin, INPUT);
   pinMode(rightTrigPin, OUTPUT);
   pinMode(rightEchoPin, INPUT);
+}
+
+void control_motor(const int directionPin, const int pwmPin, float speed)
+{
+  // Motor direction control.
+  if (speed < 0.0f)
+  {
+    digitalWrite(directionPin, LOW);
+    speed *= -1.0f; // Makes speed positive.
+  }
+  else
+  {
+    digitalWrite(directionPin, HIGH);
+  }
+
+  // Motor speed control.
+  analogWrite(pwmPin, (int)(speed * 255));
 }
 
 void loop() {
@@ -46,7 +64,6 @@ void loop() {
   input.right_sensor = read_distance(rightTrigPin,rightEchoPin);
 
   robot_output_t output = think(input);
-  analogWrite(leftM1, output.left);
-  analogWrite(rightM2, output.right);
+  control_motor(E1, leftM1, output.left);
+  control_motor(E2, rightM2, output.right);
 }
-
