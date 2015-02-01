@@ -26,9 +26,9 @@ extern "C" {
  */
 typedef struct
 {
-    float test_sensor_1;
-    float test_sensor_2;
-    float test_sensor_3;
+    float front_sensor;
+    float left_sensor;
+    float right_sensor;
 } robot_input_t;
 
 /*
