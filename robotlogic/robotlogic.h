@@ -38,18 +38,19 @@ typedef struct
 typedef struct
 {
     /* 1.0 = forwards, -1.0 = backwards */
-    float left;
-    float right;
+    float left;  /* Left wheel.  */
+    float right; /* Right wheel. */
 } robot_output_t;
 
+/* Predefined robot_output_t value. Both wheels are stopped. */
 static const robot_output_t zerooutput = { 0.0f, 0.0f };
 
 /* --------- Robot API --------- */
 
-/* Function pointer for different states. */
+/* Function pointer for state functions. */
 typedef robot_output_t (*statefunc)(robot_input_t input);
 
-/* Converts sensor inputs into actuator outputs. */
+/* Executes one step in the state machine. */
 ROBOT_API robot_output_t think(robot_input_t input);
 
 #ifdef __cplusplus

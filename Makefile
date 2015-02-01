@@ -18,6 +18,7 @@ $(OUTPUT): $(OBJECTS)
 $(OBJECTS): %.o : %.c %.h
 	gcc -DNOTARDUINO -Wall -c -std=c99 -fPIC $< -o $@
 
+# Runs blender simulation
 simu:
 	blender simulation/robotsimulation.blend
 
