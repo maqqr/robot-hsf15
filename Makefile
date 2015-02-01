@@ -1,5 +1,5 @@
 # Source filenames
-FILES = robotlogic/robotlogic
+FILES = robotlogic/robotlogic robotlogic/states
 
 # Source files with .o suffix
 OBJECTS = $(addsuffix .o,$(FILES))
@@ -16,4 +16,8 @@ $(OUTPUT): $(OBJECTS)
 
 # Compiles source files into object files
 $(OBJECTS): %.o : %.c %.h
-	gcc -DNOTARDUINO -c -fPIC $< -o $@
+	gcc -DNOTARDUINO -Wall -c -std=c99 -fPIC $< -o $@
+
+simu:
+	blender simulation/robotsimulation.blend
+

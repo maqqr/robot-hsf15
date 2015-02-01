@@ -42,7 +42,12 @@ typedef struct
     float right;
 } robot_output_t;
 
+static const robot_output_t zerooutput = { 0.0f, 0.0f };
+
 /* --------- Robot API --------- */
+
+/* Function pointer for different states. */
+typedef robot_output_t (*statefunc)(robot_input_t input);
 
 /* Converts sensor inputs into actuator outputs. */
 ROBOT_API robot_output_t think(robot_input_t input);
@@ -52,3 +57,4 @@ ROBOT_API robot_output_t think(robot_input_t input);
 #endif
 
 #endif /* _ROBOTLOGIC_H_ */
+
