@@ -56,8 +56,8 @@ void control_motor(const int directionPin, const int pwmPin, float speed)
  */
 void setup() {
   Serial.begin(9600);
-  pinMode(vasenM1, OUTPUT);
-  pinMode(oikeaM2, OUTPUT);
+  pinMode(leftM1, OUTPUT);
+  pinMode(rightM2, OUTPUT);
   pinMode(frontTrigPin, OUTPUT);
   pinMode(frontEchoPin, INPUT);
   pinMode(leftTrigPin, OUTPUT);
