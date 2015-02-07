@@ -1,7 +1,7 @@
 #include "states.h"
 
-#define FAST 1.0f
-#define SLOW 0.65f
+#define FAST 0.6f
+#define SLOW 0.4f
 
 #define SLOW_LIMIT 45.0f
 #define WALL_LIMIT 25.0f

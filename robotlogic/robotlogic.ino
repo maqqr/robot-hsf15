@@ -36,14 +36,15 @@ float read_distance(int trig, int echo) {
 void control_motor(const int directionPin, const int pwmPin, float speed)
 {
   // Motor direction control.
-  if (speed < 0.0f)
+  if (speed > 0.0f)
   {
     digitalWrite(directionPin, LOW);
-    speed *= -1.0f; // Makes speed positive.
+    
   }
   else
   {
     digitalWrite(directionPin, HIGH);
+    speed *= -1.0f; // Makes speed positive.
   }
 
   // Motor speed control.
@@ -56,8 +57,8 @@ void control_motor(const int directionPin, const int pwmPin, float speed)
  */
 void setup() {
   Serial.begin(9600);
-  pinMode(vasenM1, OUTPUT);
-  pinMode(oikeaM2, OUTPUT);
+  pinMode(leftM1, OUTPUT);
+  pinMode(rightM2, OUTPUT);
   pinMode(frontTrigPin, OUTPUT);
   pinMode(frontEchoPin, INPUT);
   pinMode(leftTrigPin, OUTPUT);
