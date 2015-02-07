@@ -7,3 +7,4 @@ Makefile~
 *.blend3
 *.blend4
 simulation/__pycache__
+blend.bat
