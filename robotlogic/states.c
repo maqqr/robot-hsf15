@@ -1,10 +1,15 @@
 #include "states.h"
 
-#define FAST 1.0f
-#define SLOW 0.65f
+#define FAST 0.80f
+#define SLOW 0.7f
 
 #define SLOW_LIMIT 45.0f
 #define WALL_LIMIT 25.0f
+
+#define LR_WALL_LIMIT 10.0f
+
+#define TURN_SPEED 0.3f
+
 
 int check_error(robot_input_t input)
 {
@@ -43,7 +48,9 @@ robot_output_t state_forward_func(robot_input_t input)
   }
   
   // Turn when too close to a wall.
-  if (input.front_sensor < WALL_LIMIT)
+  if (input.front_sensor < WALL_LIMIT ||
+      input.left_sensor < LR_WALL_LIMIT ||
+      input.right_sensor < LR_WALL_LIMIT)
   {
     state = input.left_sensor > input.right_sensor? state_left : state_right;
   }
@@ -54,8 +61,8 @@ robot_output_t state_forward_func(robot_input_t input)
 robot_output_t state_left_func(robot_input_t input)
 {
   robot_output_t output;
-  output.left = -1.0f;
-  output.right = 1.0f;
+  output.left = -TURN_SPEED;
+  output.right = TURN_SPEED;
 
   // Continue forwards when there is enough space.
   if (input.front_sensor < WALL_LIMIT + 30.0f)
@@ -69,8 +76,8 @@ robot_output_t state_left_func(robot_input_t input)
 robot_output_t state_right_func(robot_input_t input)
 {
   robot_output_t output;
-  output.left = 1.0f;
-  output.right = -1.0f;
+  output.left = TURN_SPEED;
+  output.right = -TURN_SPEED;
 
   // Continue forwards when there is enough space.
   if (input.front_sensor < WALL_LIMIT + 10.0f)
@@ -85,8 +92,8 @@ robot_output_t state_error_func(robot_input_t input)
 {
   // Something is wrong, go backwards.
   robot_output_t output;
-  output.left = -1.0f;
-  output.right = -1.0f;
+  output.left = -FAST;
+  output.right = -FAST;
 
   if (input.front_sensor > 30.0f)
   {
