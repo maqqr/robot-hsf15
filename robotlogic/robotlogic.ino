@@ -83,4 +83,12 @@ void loop() {
   // Control motors based on state machine output.
   control_motor(E1, leftM1, output.left);
   control_motor(E2, rightM2, output.right);
+  
+  delay(500);
+
+  // Pause.
+  control_motor(E1, leftM1, 0.0f);
+  control_motor(E2, rightM2, 0.0f);
+  delay(500);
 }
+
