@@ -16,7 +16,7 @@ typedef enum
 
 /* Global state variable. */
 #ifdef __cplusplus
-extern C {
+extern "C" {
 #endif
 extern STATE state;
 #ifdef __cplusplus

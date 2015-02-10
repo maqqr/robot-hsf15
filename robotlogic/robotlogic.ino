@@ -1,54 +1,30 @@
 #include "robotlogic.h"
+#include "states.h"
+#include "robot.h"
 
-const int E1 = 4;       // Left motor direction control.
-const int E2 = 7;       // Right motor direction control.
-const int leftM1 = 5;   // Left motor speed control.
-const int rightM2 = 6;  // Right motor speed control.
+// Enable Bluetooth serial control (SoftwareSerial).
+// If disabled, then standard Arduino Serial will be used.
+#define BT
 
-const int frontTrigPin = 13;
-const int frontEchoPin = 12;
+String buffer = "";
+char c;
 
-const int leftTrigPin = 11;
-const int leftEchoPin = 10;
+int autopilot = 0;
 
-const int rightTrigPin = 9;
-const int rightEchoPin = 8;
-
-const int maxSpeed = 255; // Must be between 0-255.
-
-/*
- * Reads distance sensor value.
- */
-float read_distance(int trig, int echo) {
-  digitalWrite(trig, LOW);
-  delayMicroseconds(2);
-  digitalWrite(trig, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(trig, LOW);
-  long duration = pulseIn(echo, HIGH);
-  float distance = (duration / 2.0) / 29.1;
-  return distance;
-}
+#ifdef BT
+#include <SoftwareSerial.h>
+#define TxD 2
+#define RxD 3
+SoftwareSerial btSerial(RxD, TxD);
+#endif /* BT */
 
 /*
- * Controls motor speed and direction.
+ * Converts String to int.
  */
-void control_motor(const int directionPin, const int pwmPin, float speed)
-{
-  // Motor direction control.
-  if (speed > 0.0f)
-  {
-    digitalWrite(directionPin, LOW);
-    
-  }
-  else
-  {
-    digitalWrite(directionPin, HIGH);
-    speed *= -1.0f; // Makes speed positive.
-  }
-
-  // Motor speed control.
-  analogWrite(pwmPin, (int)(speed * maxSpeed));
+int stringToInt(String s) {
+    char buf[100];
+    s.toCharArray(buf, 100);
+    return atoi(buf);
 }
 
 /*
@@ -56,7 +32,6 @@ void control_motor(const int directionPin, const int pwmPin, float speed)
  * Setups pin modes and serial communication.
  */
 void setup() {
-  Serial.begin(9600);
   pinMode(leftM1, OUTPUT);
   pinMode(rightM2, OUTPUT);
   pinMode(frontTrigPin, OUTPUT);
@@ -65,6 +40,144 @@ void setup() {
   pinMode(leftEchoPin, INPUT);
   pinMode(rightTrigPin, OUTPUT);
   pinMode(rightEchoPin, INPUT);
+
+  initialize_serialcontrol();
+}
+
+void initialize_serialcontrol()
+{
+  Serial.begin(9600);
+
+  // Setup Bluetooth
+  #ifdef BT
+  pinMode(RxD, INPUT);
+  pinMode(TxD, OUTPUT);
+  btSerial.begin(9600);
+
+  btSerial.print("AT");
+  delay(1000);
+  btSerial.print("AT+NAMEPahviloota");
+  delay(1000);
+  btSerial.flush();
+  #endif // BT
+}
+
+int streamAvailable()
+{
+  #ifdef BT
+  return btSerial.available();
+  #else
+  return Serial.available();
+  #endif // BT
+}
+
+char streamRead()
+{
+  #ifdef BT
+  return btSerial.read();
+  #else
+  return Serial.read();
+  #endif // BT
+}
+
+void streamWriteChar(char c)
+{
+  #ifdef BT
+  btSerial.print(c);
+  #else
+  Serial.print(c);
+  #endif // BT
+}
+
+void streamWriteInt(int i)
+{
+  #ifdef BT
+  btSerial.print(i);
+  #else
+  Serial.print(i);
+  #endif // BT
+}
+
+inline void setMotorL(int value)
+{
+  setMotor(E1, leftM1, value);
+}
+
+inline void setMotorR(int value)
+{
+  setMotor(E2, rightM2, value);
+}
+
+void parseCommand(String raw_cmd) {
+    String cmd[5];
+    for (int ii=0; ii<5; ii++) cmd[ii] = String("");
+
+    int j = 0;
+    for (int i=0; i < raw_cmd.length(); i++) {
+        char c = raw_cmd.charAt(i);
+        if (c == ':')
+            j++;
+        else
+            cmd[j] += String(c);
+    }
+
+    // Direct control commands
+    if (autopilot == 0) {
+      if (cmd[0] == "ML") {
+        int x = stringToInt(cmd[1]);
+        setMotorL(x);
+      }
+      else if (cmd[0] == "MR") {
+        int x = stringToInt(cmd[1]);
+        setMotorR(x);
+      }
+      else if (cmd[0] == "M") {
+        int left = stringToInt(cmd[1]);
+        int right = stringToInt(cmd[2]);
+        setMotorL(left);
+        setMotorR(right);
+      }
+      else if (cmd[0] == "A") {
+        autopilot = 1;
+      }
+    }
+    // Autopilot commands
+    else {
+      if (cmd[0] == "A") {
+        autopilot = 0;
+      }
+      else if (cmd[0] == "ST") {
+        streamWriteChar('<');
+        streamWriteChar('ST');
+        streamWriteChar(':');
+        streamWriteInt(state);
+        streamWriteChar('>');
+      }
+    }
+}
+
+void readStream() {
+  while (streamAvailable() > 0) {
+    c = streamRead();
+
+    if (c == '<') {
+      buffer = "";
+      // Accumulate buffer until c == '>'
+      while (c != '>') {
+        if (streamAvailable() > 0) {
+          c = streamRead();
+          if (c != '>') {
+            buffer += c;
+          }
+        }
+      }
+
+      // Parse command
+      //Serial.print("cmd: ");
+      //Serial.println(buffer);
+      parseCommand(buffer);
+    }
+  }
 }
 
 /*
@@ -77,18 +190,28 @@ void loop() {
   input.left_sensor = read_distance(leftTrigPin, leftEchoPin);
   input.right_sensor = read_distance(rightTrigPin,rightEchoPin);
 
-  // Feed input to the state machine.
-  robot_output_t output = think(input);
+  if (autopilot == 1) {
+    // Feed input to the state machine.
+    robot_output_t output = think(input);
 
-  // Control motors based on state machine output.
-  control_motor(E1, leftM1, output.left);
-  control_motor(E2, rightM2, output.right);
-  
-  delay(500);
+    // Control motors based on state machine output.
+    setMotorL((int)(output.left * maxSpeed));
+    setMotorR((int)(output.right * maxSpeed));
+  }
 
-  // Pause.
-  control_motor(E1, leftM1, 0.0f);
-  control_motor(E2, rightM2, 0.0f);
-  delay(500);
+  // Listen to commands.
+  readStream();
+
+  // Send sensor data.
+  streamWriteChar('<');
+  streamWriteChar('S');
+  streamWriteChar(':');
+  streamWriteInt(input.front_sensor);
+  streamWriteChar(':');
+  streamWriteInt(input.left_sensor);
+  streamWriteChar(':');
+  streamWriteInt(input.right_sensor);
+  streamWriteChar('>');
+
+  delay(10);
 }
-
