@@ -40,15 +40,15 @@ float read_distance(int trig, int echo) {
 void setMotor(int E, int M, int value)
 {
   if (value < 0) {
-    digitalWrite(M, LOW);
+    digitalWrite(E, HIGH);
     value = abs(value);
   }
   else {
-    digitalWrite(M, HIGH);
+    digitalWrite(E, LOW);
   }
-  Serial.print("motor ");
-  Serial.println(value);
-  analogWrite(E, value);
+  //Serial.print("motor ");
+  //Serial.println(value);
+  analogWrite(M, value);
 }
 
 #endif /* _ROBOT_H_ */

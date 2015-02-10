@@ -4,7 +4,7 @@
 
 // Enable Bluetooth serial control (SoftwareSerial).
 // If disabled, then standard Arduino Serial will be used.
-#define BT
+//#define BT
 
 String buffer = "";
 char c;
@@ -98,6 +98,15 @@ void streamWriteInt(int i)
   #endif // BT
 }
 
+void streamWriteFloat(float f)
+{
+  #ifdef BT
+  btSerial.print(f);
+  #else
+  Serial.print(f);
+  #endif // BT
+}
+
 inline void setMotorL(int value)
 {
   setMotor(E1, leftM1, value);
@@ -148,7 +157,8 @@ void parseCommand(String raw_cmd) {
       }
       else if (cmd[0] == "ST") {
         streamWriteChar('<');
-        streamWriteChar('ST');
+        streamWriteChar('S');
+        streamWriteChar('T');
         streamWriteChar(':');
         streamWriteInt(state);
         streamWriteChar('>');
@@ -206,11 +216,11 @@ void loop() {
   streamWriteChar('<');
   streamWriteChar('S');
   streamWriteChar(':');
-  streamWriteInt(input.front_sensor);
+  streamWriteFloat(input.front_sensor);
   streamWriteChar(':');
-  streamWriteInt(input.left_sensor);
+  streamWriteFloat(input.left_sensor);
   streamWriteChar(':');
-  streamWriteInt(input.right_sensor);
+  streamWriteFloat(input.right_sensor);
   streamWriteChar('>');
 
   delay(10);

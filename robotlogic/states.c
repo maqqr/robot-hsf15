@@ -1,14 +1,14 @@
 #include "states.h"
 
 #define FAST 0.80f
-#define SLOW 0.7f
+#define SLOW 0.60f
 
 #define SLOW_LIMIT 45.0f
 #define WALL_LIMIT 25.0f
 
 #define LR_WALL_LIMIT 10.0f
 
-#define TURN_SPEED 0.3f
+#define TURN_SPEED 0.6f
 
 
 int check_error(robot_input_t input)
