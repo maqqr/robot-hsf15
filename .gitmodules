@@ -1,0 +1,3 @@
+[submodule "clojure-bt-serial-console"]
+	path = clojure-bt-serial-console
+	url = git@github.com:jasalt/clojure-bt-serial-console.git
