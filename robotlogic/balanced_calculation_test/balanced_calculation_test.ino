@@ -1,10 +1,9 @@
-//#include "robot.h"
 
 // Motor control pins.
 const int E1 = 5;       // Left motor direction control.
 const int E2 = 6;       // Right motor direction control.
-const int M1 = 4;   // Left motor speed control.
-const int M2 = 7;  // Right motor speed control.
+const int M1 = 4;   // Right
+const int M2 = 7;  
 
 // Sensor pins.
 const int frontTrigPin = 13;
@@ -36,31 +35,18 @@ void setup() {
  * Main loop.
  */
 void loop() {
-  goForward();
- //readInputs();
-  
+  readInputs();  
 }
 
 void readInputs(){   
-  // Read input from sensors.
-  //float front_sensor = read_distances(frontTrigPin, frontEchoPin);
   float left_sensor = read_distances(leftTrigPin, leftEchoPin);
   float right_sensor = read_distances(rightTrigPin,rightEchoPin);
   
-  //Serial.print(front_sensor);
-  //Serial.print(",");
+  Serial.print(front_sensor);
+  Serial.print(",");
   Serial.print(left_sensor);
   Serial.print(",");
   Serial.println(right_sensor);
-  
-  goForward();
-  if(left_sensor < 7) goRight();
-  if(right_sensor < 7) goLeft();
-  if(left_sensor > 100) goRight();
-  if(right_sensor > 100) goLeft();
-  //if(left_sensor + right_sensor < 35) goForward();
-  //else goStop();
-  //if(left_sensor + right_sensor > 250) goStop();
 }
 
 void goLeft() {
