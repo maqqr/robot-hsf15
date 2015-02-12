@@ -1,3 +1,9 @@
+#include <SoftwareSerial.h>
+
+String buffer = "";
+char c;
+
+SoftwareSerial btSerial(2, 3); // RX, TX
 
 // Motor control pins.
 const int E1 = 5;       // R
@@ -13,12 +19,31 @@ const int leftEchoPin = 10;
 const int rightTrigPin = 9;
 const int rightEchoPin = 8;
 
+
+/*
+ * Converts String to int.
+ */
+int stringToInt(String s) {
+    char buf[100];
+    s.toCharArray(buf, 100);
+    return atoi(buf);
+}
+
+char streamRead()
+{
+  return btSerial.read();
+}
+
 /*
  * Performs one-time initialization.
  * Setups pin modes and serial communication.
  */
 void setup() {  
   Serial.begin(9600);
+  Serial.println("Goodnight moon!");
+
+  // set the data rate for the SoftwareSerial port
+  btSerial.begin(9600);
   
   pinMode(M1, OUTPUT);
   pinMode(M2, OUTPUT);
@@ -31,12 +56,69 @@ void setup() {
   pinMode(rightEchoPin, INPUT);
 }
 
+void parseCommand(String raw_cmd) {
+    String cmd[5];
+    for (int ii=0; ii<5; ii++) cmd[ii] = String("");
+
+    int j = 0;
+    for (int i=0; i < raw_cmd.length(); i++) {
+        char c = raw_cmd.charAt(i);
+        if (c == ':')
+            j++;
+        else
+            cmd[j] += String(c);
+    }
+
+    if (cmd[0] == "F") {
+      int speedd = stringToInt(cmd[1]);
+      goForward(speedd / 256.0f);
+    }
+    else if (cmd[0] == "B") {
+      int speedd = stringToInt(cmd[1]);
+      goBackward(speedd / 256.0f);
+    }
+    else if (cmd[0] == "L") {
+      int speedd = stringToInt(cmd[1]);
+      goLeft(speedd / 256.0f);
+    }
+    else if (cmd[0] == "R") {
+      int speedd = stringToInt(cmd[1]);
+      goRight(speedd / 256.0f);
+    }
+}
+
+void readStream() {
+  while (btSerial.available() > 0) {
+    c = streamRead();
+
+    if (c == '<') {
+      buffer = "";
+      // Accumulate buffer until c == '>'
+      while (c != '>') {
+        if (btSerial.available() > 0) {
+          c = streamRead();
+          if (c != '>') {
+            buffer += c;
+          }
+        }
+      }
+
+      // Parse command
+      //Serial.print("cmd: ");
+      //Serial.println(buffer);
+      parseCommand(buffer);
+    }
+  }
+}
+
 /*
  * Main loop.
  */
 void loop() {
   //readInputs();  
-  goRight();
+  //goForward(0.7);
+  readStream();
+  delay(10);
 }
 
 void readInputs(){   
@@ -63,7 +145,6 @@ void goRight(float x) {
  analogWrite(E2, (int)(135 * x)); 
  analogWrite(E1, (int)(255 * x));
 }
-
 
 void goForward(float x) {
  digitalWrite(M1,LOW);
