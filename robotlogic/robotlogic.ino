@@ -9,7 +9,7 @@
 String buffer = "";
 char c;
 
-int autopilot = 0;
+int autopilot = 1;
 
 #ifdef BT
 #include <SoftwareSerial.h>
@@ -199,6 +199,12 @@ void loop() {
   input.front_sensor = read_distance(frontTrigPin, frontEchoPin);
   input.left_sensor = read_distance(leftTrigPin, leftEchoPin);
   input.right_sensor = read_distance(rightTrigPin,rightEchoPin);
+  
+  //Serial.println(input.front_sensor);
+  //Serial.print(",");
+  Serial.println(input.left_sensor);
+  //Serial.print(",");
+  //Serial.println(input.right_sensor);
 
   if (autopilot == 1) {
     // Feed input to the state machine.
@@ -213,6 +219,7 @@ void loop() {
   readStream();
 
   // Send sensor data.
+  /*
   streamWriteChar('<');
   streamWriteChar('S');
   streamWriteChar(':');
@@ -222,6 +229,7 @@ void loop() {
   streamWriteChar(':');
   streamWriteFloat(input.right_sensor);
   streamWriteChar('>');
+  */
 
-  delay(10);
+  delay(200);
 }
