@@ -6,7 +6,7 @@ SoftwareSerial mySerial(10, 11); // RX, TX
 void setup() { 
  pinMode(led, OUTPUT);
  Serial.begin(115200);
- mySerial.begin(115200);
+ mySerial.begin(9600);
  setBt();
 }
 
@@ -21,11 +21,18 @@ void loop() {
 }
 
 void setBt(){
- digitalWrite(led, HIGH);//sanity check
- command("AT",2);// response: OK
- command("AT+VERSION",12);// response: OKlinvorV1.5
- command("AT+NAMEArduino",9);//response: OKsetname
- command("AT+BAUD8",8);//response: OK115200
+ 
+ mySerial.print("AT");
+ Serial.write(mySerial.read());
+ Serial.write(mySerial.read());
+ mySerial.print("AT+NAMEMatafakinBT");
+ 
+ digitalWrite(led, HIGH);//ok?
+ 
+ //command("AT",2);// response: OK
+ //command("AT+VERSION",12);// response: OKlinvorV1.5
+ //command("AT+NAMEMatafakinBT",9);//response: OKsetname
+ //command("AT+BAUD8",8);//response: OK115200
   
 }
 
