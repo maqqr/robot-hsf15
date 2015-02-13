@@ -132,7 +132,7 @@ void draw()
   while (myPort.available() > 0) {
     char inByte = char(myPort.read());
     udp.send(str(inByte));
-    //println(inByte);
+    print(inByte);
   }
 }
 

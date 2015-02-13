@@ -20,7 +20,8 @@ const int leftEchoPin = 10;
 const int rightTrigPin = 9;
 const int rightEchoPin = 8;
 
-
+int tick = 0;
+ 
 /*
  * Converts String to int.
  */
@@ -121,7 +122,8 @@ void loop() {
   //readInputs();  
   //goForward(0.7);
   readStream();
-  readAndSendInputs();
+  tick += 1;
+  if(tick == 100) { readAndSendInputs(); tick = 0; } 
   delay(10);
 }
 
