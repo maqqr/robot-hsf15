@@ -1,4 +1,5 @@
 #include <SoftwareSerial.h>
+#include<stdlib.h>
 
 String buffer = "";
 char c;
@@ -6,10 +7,10 @@ char c;
 SoftwareSerial btSerial(2, 3); // RX, TX
 
 // Motor control pins.
-const int E1 = 5;       // R
-const int E2 = 6;       // L
-const int M1 = 4;   // Right
-const int M2 = 7;   // L
+const int E1 = 5;   // 
+const int E2 = 6;   // 
+const int M1 = 4;   // 
+const int M2 = 7;   // 
 
 // Sensor pins.
 const int frontTrigPin = 13;
@@ -120,49 +121,62 @@ void loop() {
   //readInputs();  
   //goForward(0.7);
   readStream();
+  readAndSendInputs();
   delay(10);
 }
 
-void readInputs(){   
+void readAndSendInputs(){   
   float left_sensor = read_distances(leftTrigPin, leftEchoPin);
-  float right_sensor = read_distances(rightTrigPin,rightEchoPin);
+  float right_sensor = read_distances(rightTrigPin, rightEchoPin);
+  float front_sensor = read_distances(frontTrigPin, frontEchoPin);
+  
+  btSerial.print('<');
+  btSerial.print('S');
+  btSerial.print(':');
+  btSerial.print(front_sensor);
+  btSerial.print(':');
+  btSerial.print(left_sensor);
+  btSerial.print(':');
+  btSerial.print(right_sensor);
+  btSerial.print('>');
   
   //Serial.print(front_sensor);
   //Serial.print(",");
-  Serial.print(left_sensor);
-  Serial.print(",");
-  Serial.println(right_sensor);
+  //Serial.print(left_sensor);
+  //Serial.print(",");
+  //Serial.println(right_sensor);
 }
 
 int balanced = 135;
 int full = 255;
+int power = 180;
 
-void goLeft(float x) {
+void goLeft(float x) { //ETEEN / TAAKSE
  digitalWrite(M1, LOW);  
  digitalWrite(M2, HIGH);      
- analogWrite(E2, (int)(full * x)); 
+ analogWrite(E2, (int)(242 * x)); 
  analogWrite(E1, (int)(255 * x));
 }
 
-void goRight(float x) {
+void goRight(float x) { //ETEEN / TAAKSE
  digitalWrite(M2, LOW);  
  digitalWrite(M1, HIGH);      
- analogWrite(E2, (int)(full * x)); 
+ analogWrite(E2, (int)(242 * x)); 
  analogWrite(E1, (int)(255 * x));
 }
 
-void goForward(float x) {
- digitalWrite(M1,LOW);
- digitalWrite(M2, LOW);
- analogWrite(E1, 255 * x);
- analogWrite(E2, full * x);
+void goForward(float x) { //VASEN / OIKEA
+ digitalWrite(M1,HIGH);
+ digitalWrite(M2, HIGH);
+ analogWrite(E1, power * x);
+ analogWrite(E2, power * x);
 }
  
-void goBackward(float x) {
-  digitalWrite(M1,HIGH);
-  digitalWrite(M2, HIGH);
-  analogWrite(E1, 255 * x);
-  analogWrite(E2, full * x);
+void goBackward(float x) { //VASEN / OIKEA
+  digitalWrite(M1,LOW);
+  digitalWrite(M2, LOW);
+  analogWrite(E1, power * x);
+  analogWrite(E2, power * x);
 }
 
 /*

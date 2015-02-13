@@ -19,6 +19,8 @@ import ddf.minim.effects.*;
 import ddf.minim.signals.*;
 import ddf.minim.*;
 
+import hypermedia.net.*; //UDP
+
 //PitchDetectorAutocorrelation PD; //Autocorrelation
 //PitchDetectorHPS PD; //Harmonic Product Spectrum -not working yet-
 PitchDetectorFFT PD; // Naive
@@ -36,6 +38,8 @@ float avg_level = 0;
 float last_level = 0;
 String filename;
 float begin_playing_time = -1;
+
+UDP udp;
 
 Serial myPort;
 
@@ -78,7 +82,11 @@ void setup()
   fill(0);
   stroke(255);
   println(Serial.list());
+  
   myPort = new Serial(this, Serial.list()[0], 9600);
+  
+  udp = new UDP("Jarkonservu", 3333, "localhost");
+  println(udp.address());
 }
 
 
@@ -113,16 +121,19 @@ void draw()
   line(xpos, height, xpos, height - f / 5.0f);
   avg_level = level;
   last_level = f;
-
-  /* TODO kirjoitetaan f ja level */
+  
   rect(0,0,1000,250);
   fill(0);
   textSize(40);
   text(f, 50, 50);
   text(level, 50, 150);
   processInput(f, level);
-  //fill(255);
-  /* TODO tönnä se bt formatoinnin jälkeen 215 258 290 */
+  
+  while (myPort.available() > 0) {
+    char inByte = char(myPort.read());
+    udp.send(str(inByte));
+    //println(inByte);
+  }
 }
 
 void processInput(float f, float level) {
