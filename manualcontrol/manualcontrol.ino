@@ -72,6 +72,7 @@ void parseCommand(String raw_cmd) {
     if (cmd[0] == "F") {
       int speedd = stringToInt(cmd[1]);
       goForward(speedd / 256.0f);
+     //goForward(1);
     }
     else if (cmd[0] == "B") {
       int speedd = stringToInt(cmd[1]);
@@ -92,6 +93,7 @@ void readStream() {
     c = streamRead();
 
     if (c == '<') {
+      Serial.println("Alkoi");
       buffer = "";
       // Accumulate buffer until c == '>'
       while (c != '>') {
@@ -132,17 +134,20 @@ void readInputs(){
   Serial.println(right_sensor);
 }
 
+int balanced = 135;
+int full = 255;
+
 void goLeft(float x) {
  digitalWrite(M1, LOW);  
  digitalWrite(M2, HIGH);      
- analogWrite(E2, (int)(135 * x)); 
+ analogWrite(E2, (int)(full * x)); 
  analogWrite(E1, (int)(255 * x));
 }
 
 void goRight(float x) {
  digitalWrite(M2, LOW);  
  digitalWrite(M1, HIGH);      
- analogWrite(E2, (int)(135 * x)); 
+ analogWrite(E2, (int)(full * x)); 
  analogWrite(E1, (int)(255 * x));
 }
 
@@ -150,14 +155,14 @@ void goForward(float x) {
  digitalWrite(M1,LOW);
  digitalWrite(M2, LOW);
  analogWrite(E1, 255 * x);
- analogWrite(E2, 135 * x);
+ analogWrite(E2, full * x);
 }
  
 void goBackward(float x) {
   digitalWrite(M1,HIGH);
   digitalWrite(M2, HIGH);
   analogWrite(E1, 255 * x);
-  analogWrite(E2, 135 * x);
+  analogWrite(E2, full * x);
 }
 
 /*
